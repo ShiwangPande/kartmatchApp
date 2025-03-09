@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
+
+type Position = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center';
 import { vendors as initialVendors } from '@/data/vendors';
 import { Vendor, PreferenceType } from '@/types/vendor';
 
@@ -69,6 +71,11 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setCurrentVendorIndex(0);
   };
 
+  const toastOptions = {
+      duration: 2000, // 2 seconds duration
+      position: 'top-center' as Position, // positions toast at the top center
+    };
+
   const addToFavorites = (vendor: Vendor) => {
     if (!favorites.some(fav => fav.id === vendor.id)) {
       setFavorites(prev => [...prev, vendor]);
@@ -80,7 +87,8 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           border: '1px solid #fff',
           fontSize: '0.85rem',
           padding: '0.75rem'
-        }
+        },
+        ...toastOptions,
       });
     }
   };
@@ -95,7 +103,8 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         border: '1px solid #fff',
         fontSize: '0.85rem',
         padding: '0.75rem'
-      }
+      },
+      ...toastOptions,
     });
   };
 
@@ -111,7 +120,8 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           border: '1px solid #fff',
           fontSize: '0.85rem',
           padding: '0.75rem'
-        }
+        },
+        ...toastOptions,
       });
       setCurrentVendorIndex(0);
     }
