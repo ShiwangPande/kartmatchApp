@@ -25,7 +25,7 @@ export default function Home() {
     <div className="flex flex-col h-screen w-full bg-gradient-to-br from-white to-[#F5F5F5] food-pattern-bg overflow-hidden">
       <div className="flex-1 overflow-y-auto pt-4 px-4 sm:px-6 pb-16">
         <h1 className="text-xl sm:text-2xl font-bold text-center mb-4 text-[#333333]">
-          Street Food <span className="text-[#FF5722]">Finder</span>
+        Kart<span className="text-[#FF5722]">Match </span>
         </h1>
 
         <div className="max-w-md mx-auto sm:max-w-2xl flex flex-col">
