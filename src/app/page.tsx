@@ -1,18 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PreferenceSelector } from '@/components/PreferenceSelector';
 import { FoodCard } from '@/components/FoodCard';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/Navbar';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useVendors } from '@/context/VendorContext';
 
 export default function Home() {
   const { preferences, shuffledVendors, currentVendorIndex, resetVendors } = useVendors();
   const currentVendor = shuffledVendors[currentVendorIndex];
-  // State to toggle preference selector on mobile
-  const [showPreferences, setShowPreferences] = useState(false);
+  // Initially show the preferences on mobile
+  const [showPreferences, setShowPreferences] = useState(true);
+
+  // Automatically hide the preference selector when two preferences are chosen.
+  useEffect(() => {
+    if (preferences.length === 2) {
+      setShowPreferences(false);
+    }
+  }, [preferences]);
 
   return (
     <div className="flex flex-col h-screen w-full bg-gradient-to-br from-white to-[#F5F5F5] food-pattern-bg overflow-hidden">
@@ -22,13 +29,21 @@ export default function Home() {
         </h1>
 
         <div className="max-w-md mx-auto sm:max-w-2xl flex flex-col">
-          {/* On mobile, toggle the preference selector */}
+          {/* Toggle button only on mobile */}
           <div className="sm:hidden mb-4">
             <Button 
               onClick={() => setShowPreferences(!showPreferences)}
-              className="w-full bg-[#FF5722] text-white hover:bg-[#FF5722]/90"
+              className="w-full bg-[#FF5722] text-white hover:bg-[#FF5722]/90 flex items-center justify-center gap-2"
             >
-              {showPreferences ? 'Hide Preferences' : 'Show Preferences'}
+              {showPreferences ? (
+                <>
+                  <ChevronUp size={16} /> Hide Preferences
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={16} /> Show Preferences
+                </>
+              )}
             </Button>
           </div>
           {/* Always show on larger screens */}
