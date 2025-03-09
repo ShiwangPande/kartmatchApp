@@ -414,355 +414,361 @@ export const MapView = () => {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* Location error alert */}
-      {locationError && (
-        <Alert className="mb-4">
-          <AlertDescription>{locationError}</AlertDescription>
-        </Alert>
-      )}
+  {/* Location error alert */}
+  {locationError && (
+    <Alert className="mb-2 sm:mb-4">
+      <AlertDescription>{locationError}</AlertDescription>
+    </Alert>
+  )}
 
-      {/* Map Container - Takes full height */}
-      <div className="absolute inset-0 z-0">
-        {!userLocation ? (
-          <div className="flex flex-col items-center justify-center h-full bg-blue-50">
-            <Navigation2Off size={32} className="text-gray-400 mb-2" />
-            <p className="text-gray-500">Location not available</p>
-          </div>
-        ) : (
-          showMap && (
-            <MapWithNoSSR 
-              userLocation={userLocation}
-              radius={radius}
-              vendorsInRadius={filteredVendors}
-              selectedVendor={selectedVendor}
-              onVendorSelect={setSelectedVendor}
-            />
-          )
-        )}
+  {/* Map Container - Takes full height */}
+  <div className="absolute inset-0 z-0">
+    {!userLocation ? (
+      <div className="flex flex-col items-center justify-center h-full bg-blue-50">
+        <Navigation2Off size={32} className="text-gray-400 mb-2" />
+        <p className="text-gray-500">Location not available</p>
       </div>
+    ) : (
+      showMap && (
+        <MapWithNoSSR 
+          userLocation={userLocation}
+          radius={radius}
+          vendorsInRadius={filteredVendors}
+          selectedVendor={selectedVendor}
+          onVendorSelect={setSelectedVendor}
+        />
+      )
+    )}
+  </div>
 
-      {/* Top Controls */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-4">
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Find Street Food</h2>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={requestLocationPermission}
-              className="text-[#FF5722]"
-            >
-              <MapPin size={16} className="mr-1" />
-              Update Location
-            </Button>
-          </div>
-          
-          {/* Search input */}
-          <div className="relative mt-3">
-            <Input
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search vendors or food items..."
-              className="w-full"
-            />
-            
-            {/* Food item dropdown */}
-            {showFoodOptions && filteredFoodOptions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 max-h-40 overflow-y-auto bg-white border rounded-md shadow-lg">
-                <ScrollArea className="max-h-40">
-                  {filteredFoodOptions.map((item, index) => (
-                    <div 
-                      key={index} 
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => selectFoodItem(item)}
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </ScrollArea>
-              </div>
-            )}
-          </div>
-          
-          {/* Selected food items */}
-          {selectedFoodItems.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedFoodItems.map((item, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                  {item}
-                  <button onClick={() => removeFoodItem(item)} className="text-gray-500 hover:text-gray-700">
-                    <X size={14} />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          )}
-          
-          {/* Filters toggle */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setIsFiltersVisible(!isFiltersVisible)}
-            className="mt-2 text-[#FF5722] w-full flex justify-between"
-          >
-            <span>Radius & Filters</span>
-            {isFiltersVisible ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </Button>
-          
-          {/* Expanded filters */}
-          {isFiltersVisible && (
-            <div className="mt-2 pt-2 border-t">
-              <h3 className="text-sm font-medium mb-2">Search Radius</h3>
-              <RadioGroup 
-                value={radiusType} 
-                onValueChange={handleRadiusTypeChange}
-                className="flex space-x-4 mb-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="5km" id="r1" />
-                  <Label htmlFor="r1">5km</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="10km" id="r2" />
-                  <Label htmlFor="r2">10km</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="custom" id="r3" />
-                  <Label htmlFor="r3">Custom</Label>
-                </div>
-              </RadioGroup>
-              
-              {radiusType === 'custom' && (
-                <div className="mb-3">
-                  <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                    <span>1km</span>
-                    <span>{customRadius}km</span>
-                    <span>100km</span>
-                  </div>
-                  <Slider
-                    value={[customRadius]}
-                    min={1}
-                    max={100}
-                    step={1}
-                    onValueChange={handleCustomRadiusChange}
-                    className="w-full mb-4"
-                  />
-                  
-                  {/* Custom radius input field */}
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Label htmlFor="custom-radius" className="text-sm whitespace-nowrap">Set exact radius:</Label>
-                    <div className="flex w-32">
-                      <Input
-                        id="custom-radius"
-                        type="number"
-                        min="1"
-                        max="1000"
-                        step="0.1"
-                        value={radiusInputValue}
-                        onChange={handleRadiusInputChange}
-                        onBlur={handleRadiusInputBlur}
-                        onKeyPress={handleRadiusInputKeyPress}
-                        className="rounded-r-none"
-                      />
-                      <div className="flex items-center justify-center bg-muted px-3 rounded-r-md border border-l-0 border-input">
-                        <span className="text-sm">km</span>
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm"
-                      variant="secondary"
-                      onClick={applyCustomRadiusInput}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              )}
-              
-              <div className="text-sm text-muted-foreground">
-                Showing {filteredVendors.length} vendors within {radius}km
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+  {/* Top Controls - Use semi-transparent background for map visibility */}
+  <div className="absolute top-0 left-0 right-0 z-10 p-3">
+    <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md p-3 sm:p-4">
+    <div className="flex justify-between items-center">
+  <h2 className="text-xs sm:text-base font-semibold">Find Street Food</h2>
+  <Button 
+    variant="outline" 
+    size="sm" 
+    onClick={requestLocationPermission}
+    className="text-[#FF5722] flex items-center gap-1"
+  >
+    <MapPin size={14} />
+    <span className="text-xs">Update</span>
+  </Button>
+</div>
+
       
-      {/* Bottom draggable panel */}
-      <div 
-        ref={panelRef}
-        className={`absolute bottom-0 left-0 right-0 z-10 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-out ${bottomPanelHeight}`}
-        style={{ 
-          overflowY: 'hidden',
-          transition: isDragging ? 'none' : 'height 0.3s ease-out'
-        }}
-      >
-        {/* Drag handle */}
-        <div 
-          ref={dragHandleRef}
-          className="h-8 w-full flex items-center justify-center cursor-grab active:cursor-grabbing"
-          onMouseDown={(e) => handleDragStart(e as unknown as MouseEvent)}
-          onTouchStart={(e) => handleDragStart(e as unknown as TouchEvent)}
-        >
-          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-          
-          {/* Panel state toggle button */}
-          <button 
-            className="absolute right-4 top-2 p-1 text-gray-500 hover:bg-gray-100 rounded-full"
-            onClick={togglePanelState}
-          >
-            {bottomPanelState === 'expanded' ? (
-              <Minimize2 size={18} />
-            ) : bottomPanelState === 'collapsed' ? (
-              <Maximize2 size={18} />
-            ) : (
-              <ChevronUp size={18} />
-            )}
-          </button>
-        </div>
+      {/* Search input */}
+      <div className="relative mt-3">
+        <Input
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search vendors or food items..."
+          className="w-full py-2 px-3 text-sm sm:text-base"
+        />
         
-        {/* Panel content */}
-        <div className="h-full overflow-hidden flex flex-col">
-          {/* Selected vendor card */}
-          {selectedVendor && (
-            <Card className="mx-4 mb-4 border-none shadow-none">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
-                    <img 
-                      src={selectedVendor.photoUrl} 
-                      alt={selectedVendor.name} 
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{selectedVendor.name}</h3>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {selectedVendor.foodItems.slice(0, 3).join(", ")}
-                      {selectedVendor.foodItems.length > 3 && "…"}
-                    </div>
-                    <div className="flex text-xs space-x-3 mt-2">
-                      <span className="flex items-center">
-                        <Utensils size={12} className="mr-1 text-[#FF5722]" />
-                        {selectedVendor.tasteRating}
-                      </span>
-                      <span className="flex items-center">
-                        <ShieldCheck size={12} className="mr-1 text-[#FF5722]" />
-                        {selectedVendor.hygieneRating}
-                      </span>
-                      <span className="flex items-center">
-                        <Heart size={12} className="mr-1 text-[#FF5722]" />
-                        {selectedVendor.hospitalityRating}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Button 
-                      size="sm" 
-                      className="bg-[#FF5722] hover:bg-[#FF5722]/90"
-                      onClick={() => goToVendorDetail(selectedVendor)}
-                    >
-                      View Details
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${selectedVendor.location.coordinates[1]},${selectedVendor.location.coordinates[0]}`, '_blank')}
-                    >
-                      Directions
-                    </Button>
-                  </div>
+        {/* Food item dropdown */}
+        {showFoodOptions && filteredFoodOptions.length > 0 && (
+          <div className="absolute z-20 w-full mt-1 max-h-40 overflow-y-auto bg-white border rounded-md shadow-lg">
+            <ScrollArea className="max-h-40">
+              {filteredFoodOptions.map((item, index) => (
+                <div 
+                  key={index} 
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  onClick={() => selectFoodItem(item)}
+                >
+                  {item}
                 </div>
-              </CardContent>
-            </Card>
-          )}
-          
-          {/* Vendor list */}
-          <div className="px-4 flex-1 overflow-hidden">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-lg">Nearby Vendors ({filteredVendors.length})</h3>
-              <Badge variant="outline">{radius}km radius</Badge>
-            </div>
-            
-            <ScrollArea className="h-[calc(100%-2rem)]">
-              <div className="grid grid-cols-1 gap-3 pr-2 pb-4">
-                {filteredVendors.length === 0 ? (
-                  <div className="text-center p-6 bg-gray-50 rounded-lg">
-                    <p className="text-muted-foreground">No vendors found within {radius}km</p>
-                    {(searchQuery || selectedFoodItems.length > 0) && (
-                      <Button 
-                        variant="link" 
-                        className="mt-2"
-                        onClick={() => {
-                          setSearchQuery('');
-                          setSelectedFoodItems([]);
-                        }}
-                      >
-                        Clear filters
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  filteredVendors.map(vendor => {
-                    // Calculate distance if we have user location
-                    let distanceText = '';
-                    if (userLocation) {
-                      const [userLng, userLat] = userLocation;
-                      const [vendorLng, vendorLat] = vendor.location.coordinates;
-                      const distance = calculateDistance(userLat, userLng, vendorLat, vendorLng);
-                      distanceText = `${distance.toFixed(1)}km`;
-                    }
-                    
-                    return (
-                      <Card 
-                        key={vendor.id} 
-                        className={`overflow-hidden cursor-pointer transition-all hover:border-[#FF5722]/50 ${
-                          selectedVendor?.id === vendor.id ? 'border-2 border-[#FF5722]' : ''
-                        }`}
-                        onClick={() => setSelectedVendor(vendor)}
-                      >
-                        <div className="flex h-24">
-                          <div className="w-24 h-full">
-                            <img 
-                              src={vendor.photoUrl} 
-                              alt={vendor.name} 
-                              className="w-full h-full object-cover" 
-                            />
-                          </div>
-                          <div className="flex-1 p-3">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-sm">{vendor.name}</h4>
-                              {distanceText && (
-                                <Badge variant="outline" className="text-xs">{distanceText}</Badge>
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                              {vendor.foodItems.join(", ")}
-                            </div>
-                            <div className="flex text-xs space-x-3 mt-2">
-                              <span className="flex items-center">
-                                <Utensils size={12} className="mr-1 text-[#FF5722]" />
-                                {vendor.tasteRating}
-                              </span>
-                              <span className="flex items-center">
-                                <ShieldCheck size={12} className="mr-1 text-[#FF5722]" />
-                                {vendor.hygieneRating}
-                              </span>
-                              <span className="flex items-center">
-                                <Heart size={12} className="mr-1 text-[#FF5722]" />
-                                {vendor.hospitalityRating}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })
-                )}
-              </div>
+              ))}
             </ScrollArea>
           </div>
+        )}
+      </div>
+      
+      {/* Selected food items */}
+      {selectedFoodItems.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {selectedFoodItems.map((item, index) => (
+            <Badge key={index} variant="secondary" className="flex items-center gap-1 text-xs">
+              {item}
+              <button onClick={() => removeFoodItem(item)} className="text-gray-500 hover:text-gray-700">
+                <X size={14} />
+              </button>
+            </Badge>
+          ))}
         </div>
+      )}
+      
+      {/* Filters toggle */}
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+        className="mt-2 text-[#FF5722] w-full flex justify-between items-center"
+      >
+        <span className="text-sm">Radius & Filters</span>
+        {isFiltersVisible ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+      </Button>
+      
+      {/* Expanded filters */}
+      {isFiltersVisible && (
+        <div className="mt-2 pt-2 border-t border-gray-200">
+          <h3 className="text-sm font-medium mb-2">Search Radius</h3>
+          <RadioGroup 
+            value={radiusType} 
+            onValueChange={handleRadiusTypeChange}
+            className="flex space-x-4 mb-3"
+          >
+            <div className="flex items-center space-x-1">
+              <RadioGroupItem value="5km" id="r1" />
+              <Label htmlFor="r1" className="text-xs">5km</Label>
+            </div>
+            <div className="flex items-center space-x-1">
+              <RadioGroupItem value="10km" id="r2" />
+              <Label htmlFor="r2" className="text-xs">10km</Label>
+            </div>
+            <div className="flex items-center space-x-1">
+              <RadioGroupItem value="custom" id="r3" />
+              <Label htmlFor="r3" className="text-xs">Custom</Label>
+            </div>
+          </RadioGroup>
+          
+          {radiusType === 'custom' && (
+            <div className="mb-3">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>1km</span>
+                <span>{customRadius}km</span>
+                <span>100km</span>
+              </div>
+              <Slider
+                value={[customRadius]}
+                min={1}
+                max={100}
+                step={1}
+                onValueChange={handleCustomRadiusChange}
+                className="w-full mb-3"
+              />
+              
+              {/* Custom radius input field */}
+              <div className="flex flex-col gap-1 sm:gap-2">
+                <Label htmlFor="custom-radius" className="text-xs whitespace-nowrap">
+                  Set exact radius:
+                </Label>
+                <div className="flex items-center space-x-1">
+                  <Input
+                    id="custom-radius"
+                    type="number"
+                    min="1"
+                    max="1000"
+                    step="0.1"
+                    value={radiusInputValue}
+                    onChange={handleRadiusInputChange}
+                    onBlur={handleRadiusInputBlur}
+                    onKeyPress={handleRadiusInputKeyPress}
+                    className="w-full py-1 px-2 text-sm rounded-md border"
+                  />
+                  <div className="flex items-center justify-center bg-muted px-2 rounded-md border border-l-0 border-input">
+                    <span className="text-xs">km</span>
+                  </div>
+                  <Button 
+                    size="sm"
+                    variant="secondary"
+                    onClick={applyCustomRadiusInput}
+                    className="text-xs"
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="text-xs text-muted-foreground">
+            Showing {filteredVendors.length} vendors within {radius}km
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+  
+  {/* Bottom draggable panel */}
+  <div 
+    ref={panelRef}
+    className={`absolute bottom-0 left-0 right-0 z-10 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-out ${bottomPanelHeight}`}
+    style={{ 
+      overflowY: 'hidden',
+      transition: isDragging ? 'none' : 'height 0.3s ease-out'
+    }}
+  >
+    {/* Drag handle */}
+    <div 
+      ref={dragHandleRef}
+      className="h-8 w-full flex items-center justify-center cursor-grab active:cursor-grabbing relative"
+      onMouseDown={(e) => handleDragStart(e as unknown as MouseEvent)}
+      onTouchStart={(e) => handleDragStart(e as unknown as TouchEvent)}
+    >
+      <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+      
+      {/* Panel state toggle button */}
+      <button 
+        className="absolute right-4 top-2 p-1 text-gray-500 hover:bg-gray-100 rounded-full"
+        onClick={togglePanelState}
+      >
+        {bottomPanelState === 'expanded' ? (
+          <Minimize2 size={18} />
+        ) : bottomPanelState === 'collapsed' ? (
+          <Maximize2 size={18} />
+        ) : (
+          <ChevronUp size={18} />
+        )}
+      </button>
+    </div>
+    
+    {/* Panel content */}
+    <div className="h-full overflow-hidden flex flex-col">
+      {/* Selected vendor card */}
+      {selectedVendor && (
+        <Card className="mx-4 mb-4 border-none shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+                <img 
+                  src={selectedVendor.photoUrl} 
+                  alt={selectedVendor.name} 
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-sm">{selectedVendor.name}</h3>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {selectedVendor.foodItems.slice(0, 3).join(", ")}
+                  {selectedVendor.foodItems.length > 3 && "…"}
+                </div>
+                <div className="flex text-xs space-x-3 mt-2">
+                  <span className="flex items-center">
+                    <Utensils size={12} className="mr-1 text-[#FF5722]" />
+                    {selectedVendor.tasteRating}
+                  </span>
+                  <span className="flex items-center">
+                    <ShieldCheck size={12} className="mr-1 text-[#FF5722]" />
+                    {selectedVendor.hygieneRating}
+                  </span>
+                  <span className="flex items-center">
+                    <Heart size={12} className="mr-1 text-[#FF5722]" />
+                    {selectedVendor.hospitalityRating}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  size="sm" 
+                  className="bg-[#FF5722] hover:bg-[#FF5722]/90 text-xs"
+                  onClick={() => goToVendorDetail(selectedVendor)}
+                >
+                  View Details
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${selectedVendor.location.coordinates[1]},${selectedVendor.location.coordinates[0]}`, '_blank')}
+                  className="text-xs"
+                >
+                  Directions
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Vendor list */}
+      <div className="px-4 flex-1 overflow-hidden">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-semibold text-base">Nearby Vendors ({filteredVendors.length})</h3>
+          <Badge variant="outline" className="text-xs">{radius}km radius</Badge>
+        </div>
+        
+        <ScrollArea className="h-[calc(100%-2rem)]">
+          <div className="grid grid-cols-1 gap-3 pr-2 pb-4">
+            {filteredVendors.length === 0 ? (
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">No vendors found within {radius}km</p>
+                {(searchQuery || selectedFoodItems.length > 0) && (
+                  <Button 
+                    variant="link" 
+                    className="mt-2 text-xs"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedFoodItems([]);
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                )}
+              </div>
+            ) : (
+              filteredVendors.map(vendor => {
+                // Calculate distance if we have user location
+                let distanceText = '';
+                if (userLocation) {
+                  const [userLng, userLat] = userLocation;
+                  const [vendorLng, vendorLat] = vendor.location.coordinates;
+                  const distance = calculateDistance(userLat, userLng, vendorLat, vendorLng);
+                  distanceText = `${distance.toFixed(1)}km`;
+                }
+                
+                return (
+                  <Card 
+                    key={vendor.id} 
+                    className={`overflow-hidden cursor-pointer transition-all hover:border-[#FF5722]/50 ${
+                      selectedVendor?.id === vendor.id ? 'border-2 border-[#FF5722]' : ''
+                    }`}
+                    onClick={() => setSelectedVendor(vendor)}
+                  >
+                    <div className="flex h-24">
+                      <div className="w-24 h-full">
+                        <img 
+                          src={vendor.photoUrl} 
+                          alt={vendor.name} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="flex-1 p-3">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-medium text-sm">{vendor.name}</h4>
+                          {distanceText && (
+                            <Badge variant="outline" className="text-xs">{distanceText}</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                          {vendor.foodItems.join(", ")}
+                        </div>
+                        <div className="flex text-xs space-x-3 mt-2">
+                          <span className="flex items-center">
+                            <Utensils size={12} className="mr-1 text-[#FF5722]" />
+                            {vendor.tasteRating}
+                          </span>
+                          <span className="flex items-center">
+                            <ShieldCheck size={12} className="mr-1 text-[#FF5722]" />
+                            {vendor.hygieneRating}
+                          </span>
+                          <span className="flex items-center">
+                            <Heart size={12} className="mr-1 text-[#FF5722]" />
+                            {vendor.hospitalityRating}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+        </ScrollArea>
       </div>
     </div>
+  </div>
+</div>
+
   );
 };
