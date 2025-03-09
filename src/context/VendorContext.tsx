@@ -74,6 +74,13 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setFavorites(prev => [...prev, vendor]);
       toast("Added to favorites", {
         description: `${vendor.name} has been added to your favorites.`,
+        style: {
+          background: '#00897B', // a teal green for success
+          color: '#fff',
+          border: '1px solid #fff',
+          fontSize: '0.85rem',
+          padding: '0.75rem'
+        }
       });
     }
   };
@@ -82,6 +89,13 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setFavorites(prev => prev.filter(vendor => vendor.id !== vendorId));
     toast("Removed from favorites", {
       description: "Vendor has been removed from your favorites.",
+      style: {
+        background: '#D32F2F', // a bold red
+        color: '#fff',
+        border: '1px solid #fff',
+        fontSize: '0.85rem',
+        padding: '0.75rem'
+      }
     });
   };
 
@@ -91,6 +105,13 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } else {
       toast("End of list", {
         description: "You've seen all vendors. Resetting to start.",
+        style: {
+          background: '#555',
+          color: '#fff',
+          border: '1px solid #fff',
+          fontSize: '0.85rem',
+          padding: '0.75rem'
+        }
       });
       setCurrentVendorIndex(0);
     }
